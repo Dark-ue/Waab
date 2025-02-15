@@ -1,20 +1,24 @@
-from discord import Intents, Client, Message
+#import modules
+import discord
+from discord.ext import commands
 from dotenv import load_dotenv
 import os
+import random 
+import command_
 
+#load the token from the .env file
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 print(TOKEN)
 
-
-intents = Intents.default()
+#initialize the bot
+intents = discord.Intents.all()
 intents.message_content = True #NOQA
-client: Client = Client(intents=intents)
+bot = commands.Bot(command_prefix='$', intents=intents)
 
-async def send_message(message: Message, user_message: str) -> None:
-    if not user_message:
-        print("Intents not set up correctly")
-        return
-    else:
-        print (f"Message: {user_message}")
-        
+#load the command
+command_.setup(bot)
+
+
+
+bot.run(TOKEN)
