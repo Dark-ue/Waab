@@ -1,31 +1,56 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import sqlite3
 import os
+import datetime
 
 # Initialize the database connection
 db_path = os.path.join(os.path.dirname(__file__), 'warnings.db')
 conn = sqlite3.connect(db_path)
 c = conn.cursor()
 
-# Create the warnings table if it doesn't exist
+# Drop the warnings table if it exists (for schema update)
+c.execute('''DROP TABLE IF EXISTS warnings''')
+
+# Create the warnings table with the correct schema
 c.execute('''CREATE TABLE IF NOT EXISTS warnings (
-                user_id INTEGER PRIMARY KEY,
-                count INTEGER
+                user_id INTEGER,
+                count INTEGER,
+                timestamp DATETIME,
+                guild_id INTEGER,
+                PRIMARY KEY (user_id, timestamp)
+            )''')
+
+# Create the settings table if it doesn't exist
+c.execute('''CREATE TABLE IF NOT EXISTS settings (
+                guild_id INTEGER PRIMARY KEY,
+                warn_deletion_period INTEGER DEFAULT 10
             )''')
 conn.commit()
 
 def get_warnings(user_id):
     c.execute('SELECT count FROM warnings WHERE user_id = ?', (user_id,))
-    result = c.fetchone()
-    return result[0] if result else 0
+    result = c.fetchall()
+    return sum([row[0] for row in result])
 
-def add_warning(user_id):
-    current_count = get_warnings(user_id)
-    if current_count == 0:
-        c.execute('INSERT INTO warnings (user_id, count) VALUES (?, ?)', (user_id, 1))
+def add_warning(user_id, guild_id):
+    timestamp = datetime.datetime.now()
+    c.execute('INSERT INTO warnings (user_id, count, timestamp, guild_id) VALUES (?, ?, ?, ?)', (user_id, 1, timestamp, guild_id))
+    conn.commit()
+
+def delete_expired_warnings(guild_id):
+    c.execute('SELECT warn_deletion_period FROM settings WHERE guild_id = ?', (guild_id,))
+    result = c.fetchone()
+    if result:
+        expiration_days = result[0]
     else:
-        c.execute('UPDATE warnings SET count = ? WHERE user_id = ?', (current_count + 1, user_id))
+        expiration_days = 10  # Default to 10 days if no setting is found
+    expiration_date = datetime.datetime.now() - datetime.timedelta(days=expiration_days)
+    c.execute('DELETE FROM warnings WHERE timestamp < ? AND guild_id = ?', (expiration_date, guild_id))
+    conn.commit()
+
+def set_warn_deletion_period(guild_id, days):
+    c.execute('INSERT OR REPLACE INTO settings (guild_id, warn_deletion_period) VALUES (?, ?)', (guild_id, days))
     conn.commit()
 
 def warn(bot):
@@ -40,7 +65,7 @@ def warn(bot):
             )
             await ctx.send(embed=embed)
         else:
-            add_warning(member.id)
+            add_warning(member.id, ctx.guild.id)
             total_warnings = get_warnings(member.id)
             embed = discord.Embed(
                 title="User Warned",
@@ -80,3 +105,35 @@ def warn(bot):
             )
             await ctx.send(embed=embed)
 
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def set_warn_period(ctx, days: int = None):
+        if days is None:
+            embed = discord.Embed(
+                title="Set Warning Deletion Period Command",
+                description="Please specify the number of days. Usage: `$set_warn_period [days]`",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
+        else:
+            set_warn_deletion_period(ctx.guild.id, days)
+            embed = discord.Embed(
+                title="Warning Deletion Period Set",
+                description=f'The warning deletion period has been set to {days} days.',
+                color=discord.Color.green()
+            )
+            await ctx.send(embed=embed)
+
+    @tasks.loop(hours=24)
+    async def cleanup_warnings():
+        for guild in bot.guilds:
+            delete_expired_warnings(guild.id)
+
+    @bot.event
+    async def on_ready():
+        cleanup_warnings.start()
+
+#list of commands
+# $warn @user [reason] - Warn a user
+# $warn_count @user - Check the number of warnings for a user
+# $set_warn_period [days] - Set the warning deletion period in days

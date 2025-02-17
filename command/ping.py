@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
 import time
 
 def ping(bot):
@@ -12,3 +11,5 @@ def ping(bot):
         response_time = (end_time - start_time) * 1000  # Convert to milliseconds
         await message.edit(content=f'Pong! Response time: `{response_time:.2f} ms`')
 
+#list of commands
+#ping
