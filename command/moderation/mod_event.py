@@ -96,8 +96,59 @@ def mod_event(bot):
             bot_message = await ctx.send(embed=embed)
             await ctx.message.delete(delay=2)
             await bot_message.delete(delay=2)
+    
+    @bot.command()
+    @commands.has_permissions(manage_messages=True)
+    async def purge(ctx, limit: str = None):
+        if limit is None:
+            embed = discord.Embed(
+                title="Purge Command",
+                description="Please specify a valid number of messages to purge or type 'all' to clear the chat. Usage: `$purge [limit]`",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
+        elif limit.lower() == 'all':
+            await ctx.channel.purge()
+            embed = discord.Embed(
+                title="Messages Purged",
+                description='All messages have been purged.',
+                color=discord.Color.orange()
+            )
+            await ctx.send(embed=embed)
+        else:
+            try:
+                limit = int(limit)
+                if limit <= 0:
+                    raise ValueError
+                await ctx.channel.purge(limit=limit)
+                embed = discord.Embed(
+                    title="Messages Purged",
+                    description=f'{limit} messages have been purged.',
+                    color=discord.Color.orange()
+                )
+                await ctx.send(embed=embed)
+            except ValueError:
+                embed = discord.Embed(
+                    title="Purge Command",
+                    description="Please specify a valid number of messages to purge or type 'all' to clear the chat. Usage: `$purge [limit]`",
+                    color=discord.Color.red()
+                )
+                await ctx.send(embed=embed)
+
+    @purge.error
+    async def purge_error(ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            embed = discord.Embed(
+                title="Permission Error",
+                description="You are missing Manage Messages permission(s) to run this command.",
+                color=discord.Color.red()
+            )
+            bot_message = await ctx.send(embed=embed)
+            await ctx.message.delete(delay=2)
+            await bot_message.delete(delay=2)
 
 #list of commands
 #kick
 #ban
 #timeout
+#purge

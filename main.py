@@ -4,13 +4,10 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from command import ping
-from command.moderation import warn, mod_event
+from command.moderation import warn, mod_event, roles
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
-
-# Prevent Python from writing .pyc files
-os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
 
 # Load the token from the .env file
 load_dotenv()
@@ -27,6 +24,8 @@ bot = commands.Bot(command_prefix='$', intents=intents)
 ping.ping(bot)
 warn.warn(bot)
 mod_event.mod_event(bot)
+roles.roles(bot)
+
 
 # Error handling
 @bot.event
