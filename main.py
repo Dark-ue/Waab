@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command import ping
+from command.misc import ping
 from command.moderation import warn, mod_event, roles
 
 # Set up logging
@@ -26,18 +26,20 @@ warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
 
-
 # Error handling
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        pass
+        await ctx.send("Command not found.")
     elif isinstance(error, commands.MissingPermissions):
-        pass
-        
+        await ctx.send("You do not have the required permissions to run this command.")
+    else:
+        logging.error(f"An error occurred: {error}")
+        await ctx.send("An unexpected error occurred. Please try again later.")
 
 # Run the bot
 try:
     bot.run(TOKEN)
 except Exception as e:
-    pass
+    logging.error(f"Failed to run the bot: {e}")
+
