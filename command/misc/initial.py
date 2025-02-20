@@ -10,4 +10,3 @@ def initial(bot):
         general = next((channel for channel in guild.text_channels if channel.permissions_for(guild.me).send_messages), None)
         if general:
             await general.send("Hello World! I am Waab!")
-
