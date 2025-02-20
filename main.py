@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import ping
+from command.misc import ping, initial
 from command.moderation import warn, mod_event, roles
 
 # Set up logging
@@ -25,7 +25,7 @@ ping.ping(bot)
 warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
-
+initial.initial(bot)
 # Error handling
 @bot.event
 async def on_command_error(ctx, error):

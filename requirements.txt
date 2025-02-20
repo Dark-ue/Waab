@@ -1,0 +1,9 @@
+discord.py
+python-dotenv
+
+
+
+
+
+//Command
+pip install -r requirements.txt
