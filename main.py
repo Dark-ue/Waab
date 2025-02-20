@@ -5,6 +5,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from command.misc import ping, initial
 from command.moderation import warn, mod_event, roles
+from command.admin_panel import global_
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +27,8 @@ warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
 initial.initial(bot)
+global_.global_(bot)
+
 # Error handling
 @bot.event
 async def on_command_error(ctx, error):
