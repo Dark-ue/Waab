@@ -147,8 +147,20 @@ def mod_event(bot):
             await ctx.message.delete(delay=2)
             await bot_message.delete(delay=2)
 
+    @bot.command()
+    @commands.has_permissions(administrator=True)
+    async def leave(ctx):
+        embed = discord.Embed(
+            title="Leave Command",
+            description="The bot is leaving the server.",
+            color=discord.Color.green()
+        )
+        await ctx.send(embed=embed)
+        await ctx.guild.leave()
+
 #list of commands
 #kick
 #ban
 #timeout
 #purge
+#leave
