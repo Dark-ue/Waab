@@ -19,15 +19,7 @@ def warn(bot):
             )
             await ctx.send(embed=embed)
         else:
-            db.add_warning(member.id, ctx.guild.id)
-            total_warnings = db.get_warnings(member.id)
-            embed = discord.Embed(
-                title="User Warned",
-                description=f'User {member.mention} has been warned for: {reason}.',
-                color=discord.Color.orange()
-            )
-            embed.add_field(name="Total Warnings", value=total_warnings, inline=False)
-            await ctx.send(embed=embed)
+            await issue_warning(ctx, member, reason)
 
     @warn.error
     async def warn_error(ctx, error):
@@ -91,3 +83,14 @@ def warn(bot):
 # $warn @user [reason] - Warn a user
 # $warn_count @user - Check the number of warnings for a user
 # $set_warn_period [days] - Set the warning deletion period in days
+
+async def issue_warning(ctx, member: discord.Member, reason: str = None):
+    db.add_warning(member.id, ctx.guild.id)
+    total_warnings = db.get_warnings(member.id)
+    embed = discord.Embed(
+        title="User Warned",
+        description=f'User {member.mention} has been warned for: {reason}.',
+        color=discord.Color.orange()
+    )
+    embed.add_field(name="Total Warnings", value=total_warnings, inline=False)
+    await ctx.send(embed=embed)
