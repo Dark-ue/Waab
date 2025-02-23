@@ -24,13 +24,14 @@ def analyze_message(text):
     if any(word in cleaned_text for word in extreme_words):
         return "Fail (Extreme Content Detected)"
 
+    sentiment_score = afinn.score(cleaned_text)
     # Step 3: Count profanity words (ALLOW some profanity)
     profane_words = [word for word in cleaned_text.split() if profanity.contains_profanity(word)]
     if len(profane_words) > 3:  # Allow light profanity but block excessive use
         return "Fail (Excessive Profanity Detected)"
 
-    # Step 4: Sentiment analysis with Afinn
-    sentiment_score = afinn.score(cleaned_text)
+    if len(profane_words) == 3 and sentiment_score < -6:
+        return "Fail (Excessive Profanity Detected)"    
 
     # Step 5: Classify sentiment
     if sentiment_score < -8:
@@ -39,6 +40,7 @@ def analyze_message(text):
     end_time = time.perf_counter()  # End timer
     execution_time = end_time - start_time  # Calculate time
     return f"Pass (Execution Time: {execution_time:.6f} seconds)"
+
 
 # Test the speed
 test_text = "This is a f***ing terrible idea, I'm gonna shoot someone!"
