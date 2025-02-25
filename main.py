@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import ping, initial
+from command.misc import ping, initial, misc
 from command.moderation import warn, mod_event, roles
 from command.admin_panel import global_
 
@@ -28,7 +28,7 @@ mod_event.mod_event(bot)
 roles.roles(bot)
 initial.initial(bot)
 global_.global_(bot)
-
+misc.misc(bot)
 
 # Error handling
 @bot.event
