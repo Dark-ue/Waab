@@ -1,5 +1,5 @@
 discord.py
 python-dotenv
 spacy
-affin
+afinn
 better_profanity
