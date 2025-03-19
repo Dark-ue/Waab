@@ -21,18 +21,6 @@ def roles(bot):
             )
             await ctx.send(embed=embed)
 
-    @addrole.error
-    async def addrole_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Roles permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
     @bot.command()
     @commands.has_permissions(manage_roles=True)
     async def removerole(ctx, member: discord.Member = None, role: discord.Role = None):
@@ -51,18 +39,6 @@ def roles(bot):
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
-
-    @removerole.error
-    async def removerole_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Roles permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
 
     @bot.command()
     @commands.has_permissions(manage_roles=True)
@@ -84,17 +60,6 @@ def roles(bot):
             )
             await ctx.send(embed=embed)
 
-    @createrole.error
-    async def createrole_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Roles permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
     @bot.command()
     @commands.has_permissions(manage_roles=True)
     async def deleterole(ctx, role: discord.Role = None):
@@ -113,17 +78,7 @@ def roles(bot):
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
-    @deleterole.error
-    async def deleterole_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Roles permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
+
 
 #list of commands
 #addrole

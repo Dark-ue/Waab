@@ -20,19 +20,7 @@ def warn(bot):
             await ctx.send(embed=embed)
         else:
             await issue_warning(ctx, member, reason)
-
-    @warn.error
-    async def warn_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Messages permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
+            
     @bot.command()
     async def warn_count(ctx, member: discord.Member = None):
         if member is None:

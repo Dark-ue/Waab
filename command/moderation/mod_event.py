@@ -22,18 +22,6 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @kick.error
-    async def kick_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Kick Members permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
     @bot.command()
     @commands.has_permissions(ban_members=True)
     async def ban(ctx, member: discord.Member = None, *, reason=None):
@@ -52,18 +40,6 @@ def mod_event(bot):
                 color=discord.Color.orange()
             )
             await ctx.send(embed=embed)
-
-    @ban.error
-    async def ban_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Ban Members permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
 
     @bot.command()
     @commands.has_permissions(moderate_members=True)
@@ -85,18 +61,6 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @timeout.error
-    async def timeout_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Moderate Members permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-    
     @bot.command()
     @commands.has_permissions(manage_messages=True)
     async def purge(ctx, limit: str = None):
@@ -134,18 +98,6 @@ def mod_event(bot):
                     color=discord.Color.red()
                 )
                 await ctx.send(embed=embed)
-
-    @purge.error
-    async def purge_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Messages permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
 
     @bot.command()
     @commands.has_permissions(administrator=True)
