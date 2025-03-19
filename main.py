@@ -27,12 +27,11 @@ warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
 __global__.__global__(bot)
-misc.misc(bot)
 
 async def load_cogs():
-     await bot.load_extension(misc)
+     await bot.load_extension("command.misc.misc")
 
-@bot.event()
+@bot.event
 async def on_ready():
      await load_cogs()
 
@@ -71,4 +70,3 @@ try:
     bot.run(TOKEN)
 except Exception as e:
     logging.error(f"Failed to run the bot: {e}")
-

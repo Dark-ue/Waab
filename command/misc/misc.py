@@ -35,7 +35,7 @@ class Misc(commands.Cog):
     async def ping(self, ctx):
         embed = discord.Embed(
             title="Ping Command",
-            description=f"Pong! {int(self.bot.latency * 1000)}ms",
+            description=f"Pong! `{int(self.bot.latency * 1000)}ms`",
             color=discord.Color.blue()
         )
         await ctx.send(embed=embed)
