@@ -3,9 +3,9 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import ping, initial, misc
+from command.misc import ping, misc
 from command.moderation import warn, mod_event, roles
-from command.admin_panel import global_
+from command.admin_panel import __global__
 
 
 # Set up logging
@@ -27,8 +27,7 @@ ping.ping(bot)
 warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
-initial.initial(bot)
-global_.global_(bot)
+__global__.__global__(bot)
 misc.misc(bot)
 
 # this shit handles errors
