@@ -3,7 +3,7 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import ping, misc
+from command.misc import misc
 from command.moderation import warn, mod_event, roles
 from command.admin_panel import __global__
 
@@ -23,12 +23,18 @@ intents.message_content = True #NOQA (Do not touch, i will return an error other
 bot = commands.Bot(command_prefix='$', intents=intents)
 
 # Load the commands
-ping.ping(bot)
 warn.warn(bot)
 mod_event.mod_event(bot)
 roles.roles(bot)
 __global__.__global__(bot)
 misc.misc(bot)
+
+async def load_cogs():
+     await bot.load_extension(misc)
+
+@bot.event()
+async def on_ready():
+     await load_cogs()
 
 # this shit handles errors
 @bot.event

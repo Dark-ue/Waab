@@ -62,6 +62,24 @@ def mod_event(bot):
             await ctx.send(embed=embed)
 
     @bot.command()
+    @commands.has_permissions(moderate_members=True)
+    async def untimeout(ctx, member: discord.Member = None):
+        if member is None:
+            embed = discord.Embed(
+                title = "Error",
+                description="Please specify a user to untimeout. Usage: `$timeout @user`",
+                color=discord.Color.red()
+            )
+            await ctx.send(embed=embed)
+        else:
+            await member.untimeout()
+            embed = discord.Embed(
+                title="User Untimed Out",
+                description=f'User {member.mention} has been untimed out.',
+                color=discord.Color.green()
+            )
+
+    @bot.command()
     @commands.has_permissions(manage_messages=True)
     async def purge(ctx, limit: str = None):
         if limit is None:
