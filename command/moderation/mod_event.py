@@ -2,10 +2,13 @@ import discord
 from discord.ext import commands
 from datetime import timedelta
 
-def mod_event(bot):
-    @bot.command()
+class Mod_Event(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot 
+
+    @commands.command()
     @commands.has_permissions(kick_members=True)
-    async def kick(ctx, member: discord.Member = None, *, reason=None):
+    async def kick(self, ctx, member: discord.Member = None, *, reason=None):
         if member is None:
             embed = discord.Embed(
                 title="Kick Command",
@@ -22,21 +25,9 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @kick.error
-    async def kick_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Kick Members permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(ctx, member: discord.Member = None, *, reason=None):
+    async def ban(self, ctx, member: discord.Member = None, *, reason=None):
         if member is None:
             embed = discord.Embed(
                 title="Ban Command",
@@ -53,21 +44,9 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @ban.error
-    async def ban_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Ban Members permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def timeout(ctx, member: discord.Member = None, duration: int = 0, *, reason=None):
+    async def timeout(self, ctx, member: discord.Member = None, duration: int = 0, *, reason=None):
         if member is None or duration <= 0:
             embed = discord.Embed(
                 title="Timeout Command",
@@ -85,21 +64,27 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @timeout.error
-    async def timeout_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
+    @commands.command()
+    @commands.has_permissions(moderate_members=True)
+    async def untimeout(self, ctx, member: discord.Member = None):
+        if member is None:
             embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Moderate Members permission(s) to run this command.",
+                title = "Error",
+                description="Please specify a user to untimeout. Usage: `$timeout @user`",
                 color=discord.Color.red()
             )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-    
-    @bot.command()
+            await ctx.send(embed=embed)
+        else:
+            await member.untimeout()
+            embed = discord.Embed(
+                title="User Untimed Out",
+                description=f'User {member.mention} has been untimed out.',
+                color=discord.Color.green()
+            )
+
+    @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def purge(ctx, limit: str = None):
+    async def purge(self, ctx, limit: str = None):
         if limit is None:
             embed = discord.Embed(
                 title="Purge Command",
@@ -135,21 +120,9 @@ def mod_event(bot):
                 )
                 await ctx.send(embed=embed)
 
-    @purge.error
-    async def purge_error(ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            embed = discord.Embed(
-                title="Permission Error",
-                description="You are missing Manage Messages permission(s) to run this command.",
-                color=discord.Color.red()
-            )
-            bot_message = await ctx.send(embed=embed)
-            await ctx.message.delete(delay=2)
-            await bot_message.delete(delay=2)
-
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(administrator=True)
-    async def leave(ctx):
+    async def leave(self, ctx):
         embed = discord.Embed(
             title="Leave Command",
             description="The bot is leaving the server.",
@@ -157,6 +130,10 @@ def mod_event(bot):
         )
         await ctx.send(embed=embed)
         await ctx.guild.leave()
+
+async def setup(bot):
+    await bot.add_cog(Mod_Event(bot))
+   
 
 #list of commands
 #kick

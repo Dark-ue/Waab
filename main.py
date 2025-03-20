@@ -3,9 +3,10 @@ import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import ping, initial, misc
+from command.misc import misc
 from command.moderation import warn, mod_event, roles
-from command.admin_panel import global_
+from command.admin_panel import __global__
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -14,36 +15,59 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 if TOKEN is None:
-    raise ValueError("No token found. Please set the DISCORD_TOKEN environment variable.")
+    raise ValueError("Create a .env file dumbass")
 
 # Initialize the bot
 intents = discord.Intents.all()
-intents.message_content = True #NOQA
+intents.message_content = True #NOQA (Do not touch, i will return an error otherwise
 bot = commands.Bot(command_prefix='$', intents=intents)
 
 # Load the commands
-ping.ping(bot)
 warn.warn(bot)
-mod_event.mod_event(bot)
-roles.roles(bot)
-initial.initial(bot)
-global_.global_(bot)
-misc.misc(bot)
 
-# Error handling
+
+async def load_cogs():
+     await bot.load_extension("command.misc.misc")
+     await bot.load_extension("command.moderation.roles")
+     await bot.load_extension("command.moderation.roles")
+     await bot.load_extension("command.admin_panel.__global__")
+
+@bot.event
+async def on_ready():
+     await load_cogs()
+
+# this shit handles errors
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
-        await ctx.send("Command not found.")
+                embed = discord.Embed(
+                     title = "Error",
+                     description = f"An unexpected error occured: {error}",
+                     color = discord.Color.red()
+                       )
+                bot_message = await ctx.send(embed=embed)
+    
     elif isinstance(error, commands.MissingPermissions):
-        await ctx.send("You do not have the required permissions to run this command.")
+        embed = discord.Embed(
+                title="Permission Error",
+                description="You are missing Manage Messages permission(s) to run this command.",
+                color=discord.Color.red()
+            )
+        bot_message = await ctx.send(embed=embed)
+
+
+        await ctx.message.delete(delay=2)
+        await bot_message.delete(delay=2)
     else:
-        logging.error(f"An error occurred: {error}")
-        await ctx.send("An unexpected error occurred. Please try again later.")
+        embed = discord.Embed( #make sure to use correct capitalisation, my dumbahh troubleshooted this for 1 hour
+            title = "Error",
+            description = f"An unexpected error occured: {error}",
+            color = discord.Color.red()
+        )
+        bot_message = await ctx.send(embed=embed)
 
 # Run the bot
 try:
     bot.run(TOKEN)
 except Exception as e:
     logging.error(f"Failed to run the bot: {e}")
-

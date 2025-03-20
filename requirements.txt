@@ -1,5 +1,5 @@
 discord.py
 python-dotenv
-spacy
-afinn
-better_profanity
+transformers 
+torch 
+profanity-check
