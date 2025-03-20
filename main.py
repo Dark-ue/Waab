@@ -24,12 +24,13 @@ bot = commands.Bot(command_prefix='$', intents=intents)
 
 # Load the commands
 warn.warn(bot)
-mod_event.mod_event(bot)
-roles.roles(bot)
-__global__.__global__(bot)
+
 
 async def load_cogs():
      await bot.load_extension("command.misc.misc")
+     await bot.load_extension("command.moderation.roles")
+     await bot.load_extension("command.moderation.roles")
+     await bot.load_extension("command.admin_panel.__global__")
 
 @bot.event
 async def on_ready():

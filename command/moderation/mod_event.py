@@ -2,10 +2,13 @@ import discord
 from discord.ext import commands
 from datetime import timedelta
 
-def mod_event(bot):
-    @bot.command()
+class Mod_Event(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot 
+
+    @commands.command()
     @commands.has_permissions(kick_members=True)
-    async def kick(ctx, member: discord.Member = None, *, reason=None):
+    async def kick(self, ctx, member: discord.Member = None, *, reason=None):
         if member is None:
             embed = discord.Embed(
                 title="Kick Command",
@@ -22,9 +25,9 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(ctx, member: discord.Member = None, *, reason=None):
+    async def ban(self, ctx, member: discord.Member = None, *, reason=None):
         if member is None:
             embed = discord.Embed(
                 title="Ban Command",
@@ -41,9 +44,9 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def timeout(ctx, member: discord.Member = None, duration: int = 0, *, reason=None):
+    async def timeout(self, ctx, member: discord.Member = None, duration: int = 0, *, reason=None):
         if member is None or duration <= 0:
             embed = discord.Embed(
                 title="Timeout Command",
@@ -61,9 +64,9 @@ def mod_event(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(moderate_members=True)
-    async def untimeout(ctx, member: discord.Member = None):
+    async def untimeout(self, ctx, member: discord.Member = None):
         if member is None:
             embed = discord.Embed(
                 title = "Error",
@@ -79,9 +82,9 @@ def mod_event(bot):
                 color=discord.Color.green()
             )
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def purge(ctx, limit: str = None):
+    async def purge(self, ctx, limit: str = None):
         if limit is None:
             embed = discord.Embed(
                 title="Purge Command",
@@ -117,9 +120,9 @@ def mod_event(bot):
                 )
                 await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(administrator=True)
-    async def leave(ctx):
+    async def leave(self, ctx):
         embed = discord.Embed(
             title="Leave Command",
             description="The bot is leaving the server.",
@@ -127,6 +130,10 @@ def mod_event(bot):
         )
         await ctx.send(embed=embed)
         await ctx.guild.leave()
+
+async def setup(bot):
+    await bot.add_cog(Mod_Event(bot))
+   
 
 #list of commands
 #kick

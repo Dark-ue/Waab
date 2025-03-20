@@ -6,14 +6,17 @@ from discord.ext import commands
 load_dotenv()
 ALLOWED_USERS = os.getenv('ALLOWED_USERS') 
 
-def __global__(bot):
-    @bot.command()
-    async def broadcast(ctx, *, message: str):
+class __global__(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def broadcast(self, ctx, *, message: str):
         if str(ctx.author.id) not in ALLOWED_USERS:
             await ctx.send("Command not found.") #this creates an illusion for the user that the command does not exist
             return
 
-        for guild in bot.guilds:
+        for guild in self.bot.guilds:
             for channel in guild.text_channels:
                 if channel.permissions_for(guild.me).send_messages:
                     await channel.send(message)
@@ -26,13 +29,13 @@ def __global__(bot):
         )
         await ctx.send(embed=embed)
 
-    @bot.command()
-    async def leave_guild(ctx, guild_id: int):
+    @commands.command()
+    async def leave_guild(self, ctx, guild_id: int):
         if str(ctx.author.id) not in ALLOWED_USERS:
             await ctx.send("Command not found.")
             return
         else:
-            guild = bot.get_guild(guild_id)
+            guild = self.bot.get_guild(guild_id)
             if guild is None:
                 embed = discord.Embed(
                     title="Leave Guild",
@@ -48,3 +51,8 @@ def __global__(bot):
                     color=discord.Color.green()
                 )
                 await ctx.send(embed=embed)
+
+
+async def setup(bot):
+    await bot.add_cog(__global__(bot))
+   

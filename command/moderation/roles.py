@@ -1,10 +1,13 @@
 import discord
 from discord.ext import commands
 
-def roles(bot):
-    @bot.command()
+class Roles(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def addrole(ctx, member: discord.Member = None, role: discord.Role = None):
+    async def addrole(self, ctx, member: discord.Member = None, role: discord.Role = None):
         if member is None or role is None:
             embed = discord.Embed(
                 title="Add Role Command",
@@ -21,9 +24,9 @@ def roles(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def removerole(ctx, member: discord.Member = None, role: discord.Role = None):
+    async def removerole(self, ctx, member: discord.Member = None, role: discord.Role = None):
         if member is None or role is None:
             embed = discord.Embed(
                 title="Remove Role Command",
@@ -40,9 +43,9 @@ def roles(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def createrole(ctx, *, name: str = None):
+    async def createrole(self, ctx, *, name: str = None):
         if name is None:
             embed = discord.Embed(
                 title="Create Role Command",
@@ -60,9 +63,9 @@ def roles(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(manage_roles=True)
-    async def deleterole(ctx, role: discord.Role = None):
+    async def deleterole(self, ctx, role: discord.Role = None):
         if role is None:
             embed = discord.Embed(
                 title="Delete Role Command",
@@ -78,6 +81,9 @@ def roles(bot):
                 color=discord.Color.green()
             )
             await ctx.send(embed=embed)
+
+async def setup(bot):
+    await bot.add_cog(Roles(bot))
 
 
 #list of commands
