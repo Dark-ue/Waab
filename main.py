@@ -1,14 +1,14 @@
 import os
-import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+#import sys
+#sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 import logging
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from command.misc import misc
-from command.moderation import mod_change
-from command.moderation import mod_event, roles
-from command.moderation import warn
+#from command.misc import misc
+#from command.moderation import mod_change
+#from command.moderation import mod_event, roles
+#from command.moderation import warn
 from command.admin_panel import __global__
 
 
@@ -27,7 +27,7 @@ intents.message_content = True #NOQA (Do not touch, i will return an error other
 bot = commands.Bot(command_prefix='$', intents=intents)
 
 # Load the commands
-warn.warn(bot)
+#warn.warn(bot)
 
 class WarnCog(commands.Cog):
     def __init__(self, bot):
@@ -41,14 +41,18 @@ async def load_cogs():
      cog = [
             "command.moderation.mod_event",
             "command.moderation.mod_change",
-            "command.moderation.warn",
+            #"command.moderation.warn",
             "command.moderation.roles",
             "command.misc.misc",
             "command.admin_panel.__global__"
      ]
 
      for i in cog:
-          await bot.load_extension(i)
+        try:
+            await bot.load_extension(i)
+            print(f"Loaded {i}")
+        except Exception as e:
+            print(f"failed to load {i}: {e}")
 @bot.event
 async def on_ready():
      await load_cogs()
