@@ -7,10 +7,14 @@ from command.moderation.database import Database
 db_path = os.path.join(os.path.dirname(__file__), 'warnings.db')
 db = Database(db_path)
 
-def warn(bot):
-    @bot.command()
+class WarnCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.cleanup_warnings.start()  # Start the cleanup task when the cog is loaded
+
+    @commands.command()
     @commands.has_permissions(manage_messages=True)
-    async def warn(ctx, member: discord.Member = None, *, reason=None):
+    async def warn(self, ctx, member: discord.Member = None, *, reason=None):
         if member is None:
             embed = discord.Embed(
                 title="Warning Command",
@@ -19,10 +23,10 @@ def warn(bot):
             )
             await ctx.send(embed=embed)
         else:
-            await issue_warning(ctx, member, reason)
-            
-    @bot.command()
-    async def warn_count(ctx, member: discord.Member = None):
+            await self.issue_warning(ctx, member, reason)
+
+    @commands.command()
+    async def warn_count(self, ctx, member: discord.Member = None):
         if member is None:
             embed = discord.Embed(
                 title="Warning Count Command",
@@ -39,9 +43,9 @@ def warn(bot):
             )
             await ctx.send(embed=embed)
 
-    @bot.command()
+    @commands.command()
     @commands.has_permissions(administrator=True)
-    async def set_warn_period(ctx, days: int = None):
+    async def set_warn_period(self, ctx, days: int = None):
         if days is None:
             embed = discord.Embed(
                 title="Set Warning Deletion Period Command",
@@ -59,27 +63,30 @@ def warn(bot):
             await ctx.send(embed=embed)
 
     @tasks.loop(hours=24)
-    async def cleanup_warnings():
-        for guild in bot.guilds:
+    async def cleanup_warnings(self):
+        for guild in self.bot.guilds:
             db.delete_expired_warnings(guild.id)
 
-    @bot.event
-    async def on_ready():
-        cleanup_warnings.start()
+    @cleanup_warnings.before_loop
+    async def before_cleanup_warnings(self):
+        await self.bot.wait_until_ready()
 
-#list of commands
-# $warn @user [reason] - Warn a user
-# $warn_count @user - Check the number of warnings for a user
-# $set_warn_period [days] - Set the warning deletion period in days
+    async def issue_warning(self, ctx, member: discord.Member, reason: str = None):
+        db.add_warning(member.id, ctx.guild.id)
+        total_warnings = db.get_warnings(member.id)
+        embed = discord.Embed(
+            title="User Warned",
+            description=f'User {member.mention} has been warned for: {reason}.',
+            color=discord.Color.orange()
+        )
+        embed.add_field(name="Total Warnings", value=total_warnings, inline=False)
+        await ctx.send(embed=embed)
 
-async def issue_warning(ctx, member: discord.Member, reason: str = None):
-    db.add_warning(member.id, ctx.guild.id)
-    total_warnings = db.get_warnings(member.id)
-    embed = discord.Embed(
-        title="User Warned",
-        description=f'User {member.mention} has been warned for: {reason}.',
-        color=discord.Color.orange()
-    )
-    embed.add_field(name="Total Warnings", value=total_warnings, inline=False)
-    await ctx.send(embed=embed)
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print(f"Cog WarnCog is ready.")
+
+# Required setup function
+async def setup(bot):
+    await bot.add_cog(WarnCog(bot))
 

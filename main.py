@@ -41,7 +41,7 @@ async def load_cogs():
      cog = [
             "command.moderation.mod_event",
             "command.moderation.mod_change",
-            #"command.moderation.warn",
+            "command.moderation.warn",
             "command.moderation.roles",
             "command.misc.misc",
             "command.admin_panel.__global__"
