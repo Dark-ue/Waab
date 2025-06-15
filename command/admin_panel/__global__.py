@@ -6,7 +6,7 @@ from discord.ext import commands
 load_dotenv()
 ALLOWED_USERS = os.getenv('ALLOWED_USERS') 
 
-class __global__(commands.Cog):
+class Global(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -54,5 +54,5 @@ class __global__(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(__global__(bot))
+    await bot.add_cog(Global(bot))
    
